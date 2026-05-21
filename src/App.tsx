@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { parseExcelFile, ParsedData } from './excel';
 import { generateMealCouponPdf, generateNameTagPdf, PageSize } from './pdf';
+import { PrintPreview } from './PrintPreview';
 
 const pageSizeOptions: Array<{ value: PageSize; label: string }> = [
   { value: 'A4', label: 'A4 portrait' },
@@ -20,6 +21,8 @@ function App() {
   const [couponCols, setCouponCols] = useState(defaultCols);
   const [pageSize, setPageSize] = useState<PageSize>('A4');
   const [couponColor, setCouponColor] = useState(false);
+  const [nameGridLines, setNameGridLines] = useState(true);
+  const [couponGridLines, setCouponGridLines] = useState(true);
 
   const summary = useMemo(() => {
     if (!parsed) return null;
@@ -62,6 +65,7 @@ function App() {
       pageSize,
       rows: nameRows,
       cols: nameCols,
+      showGrid: nameGridLines,
     });
     downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'name-tags.pdf');
   };
@@ -73,6 +77,7 @@ function App() {
       rows: couponRows,
       cols: couponCols,
       colored: couponColor,
+      showGrid: couponGridLines,
     });
     downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'meal-coupons.pdf');
   };
@@ -131,9 +136,32 @@ function App() {
               ))}
             </select>
           </label>
+          <label className="field checkbox-field">
+            <input
+              type="checkbox"
+              checked={nameGridLines}
+              onChange={(e) => setNameGridLines(e.target.checked)}
+            />
+            <span>Show grid lines in PDF</span>
+          </label>
           <button type="button" disabled={!parsed?.names.length} onClick={handleGenerateNames}>
-            Download Name Tags PDF
+            Download PDF
           </button>
+          {parsed?.names.length && (
+            <PrintPreview
+              items={parsed.names}
+              itemsPerPage={nameRows * nameCols}
+              rows={nameRows}
+              cols={nameCols}
+              pageSize={pageSize}
+              showGrid={true}
+              renderCell={(item) => (
+                <div style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+                  {item.firstName} {item.lastName}
+                </div>
+              )}
+            />
+          )}
         </div>
 
         <div className="card">
@@ -164,9 +192,54 @@ function App() {
             />
             <span>Use color-coded coupons</span>
           </label>
+          <label className="field checkbox-field">
+            <input
+              type="checkbox"
+              checked={couponGridLines}
+              onChange={(e) => setCouponGridLines(e.target.checked)}
+            />
+            <span>Show grid lines in PDF</span>
+          </label>
           <button type="button" disabled={!parsed?.menus.length} onClick={handleGenerateCoupons}>
-            Download Meal Coupons PDF
+            Download PDF
           </button>
+          {parsed?.menus.length && (
+            <PrintPreview
+              items={parsed.menus}
+              itemsPerPage={couponRows * couponCols}
+              rows={couponRows}
+              cols={couponCols}
+              pageSize={pageSize}
+              showGrid={true}
+              renderCell={(item) => {
+                if (!couponColor) {
+                  return <div style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>{item.value}</div>;
+                }
+                
+                const uniqueMenus = Array.from(new Set(parsed.menus.map((m) => m.value))).sort();
+                const colorPalette = ['#dc4639', '#1f87e8', '#1eb320', '#f59e0b', '#8b5cf6', '#ec4899'];
+                const menuIndex = uniqueMenus.indexOf(item.value);
+                const bgColor = colorPalette[menuIndex % colorPalette.length];
+                const textColor = ['#dc4639', '#1f87e8', '#8b5cf6', '#ec4899'].includes(bgColor) ? '#fff' : '#000';
+                
+                return (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      padding: '12px',
+                      backgroundColor: bgColor,
+                      color: textColor,
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {item.value}
+                  </div>
+                );
+              }}
+            />
+          )}
         </div>
       </section>
     </div>

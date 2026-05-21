@@ -119,3 +119,58 @@ button:disabled {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.button-group button {
+  flex: 1;
+}
+
+.print-preview {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.print-preview-controls {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.print-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.print-page {
+  background: white;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.print-page.portrait {
+  width: 600px;
+  aspect-ratio: 210 / 297;
+}
+
+.print-page.landscape {
+  width: 600px;
+  aspect-ratio: 297 / 210;
+}
+
+.print-grid {
+  border-collapse: collapse;
+}
+
+.print-cell {
+  word-break: break-word;
+  font-size: 14px;
+}
