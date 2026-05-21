@@ -27,12 +27,12 @@ export async function parseExcelFile(file: File): Promise<ParsedData> {
   }
 
   const sheet = workbook.Sheets[sheetNames[0]];
-  const rawRows = utils.sheet_to_json<Record<string, unknown>>(sheet, { header: 1, defval: '' });
+  const rawRows = utils.sheet_to_json<unknown[][]>(sheet, { header: 1, defval: '' });
   if (rawRows.length === 0) {
     throw new Error('The worksheet is empty.');
   }
 
-  const headers = rawRows[0].map(String);
+  const headers = rawRows[0].map((cell) => String(cell));
   const firstNameIndex = findHeaderIndex(headers, headerCandidates.firstName);
   const lastNameIndex = findHeaderIndex(headers, headerCandidates.lastName);
   const menuIndex = findHeaderIndex(headers, headerCandidates.menu);

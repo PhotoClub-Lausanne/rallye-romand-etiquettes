@@ -22,7 +22,7 @@ const getPageDimensions = (pageSize: PageSize) => {
   return { width: PageSizes.A4[0], height: PageSizes.A4[1] };
 };
 
-const colorPalette = [
+const colorPalette: Array<{ fill: [number, number, number]; text: [number, number, number] }> = [
   { fill: [0.86, 0.28, 0.2], text: [1, 1, 1] }, // red
   { fill: [0.12, 0.53, 0.9], text: [1, 1, 1] }, // blue
   { fill: [0.12, 0.7, 0.2], text: [0, 0, 0] }, // green
@@ -166,7 +166,7 @@ export async function generateMealCouponPdf(
         y: y - pageData.cellHeight,
         width: pageData.cellWidth,
         height: pageData.cellHeight,
-        color: rgb(...color.fill),
+        color: rgb(color.fill[0], color.fill[1], color.fill[2]),
       });
       
       const textWidth = font.widthOfTextAtSize(text, 12);
@@ -178,7 +178,7 @@ export async function generateMealCouponPdf(
         y: y - pageData.cellHeight / 2 - 6,
         size: fontSize,
         font,
-        color: rgb(...color.text),
+        color: rgb(color.text[0], color.text[1], color.text[2]),
         maxWidth: pageData.cellWidth - 20,
       });
     } else {

@@ -67,7 +67,13 @@ function App() {
       cols: nameCols,
       showGrid: nameGridLines,
     });
-    downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'name-tags.pdf');
+    downloadBlob(
+      new Blob(
+        [Uint8Array.from(pdfBytes).buffer],
+        { type: 'application/pdf' },
+      ),
+      'name-tags.pdf',
+    );
   };
 
   const handleGenerateCoupons = async () => {
@@ -79,7 +85,13 @@ function App() {
       colored: couponColor,
       showGrid: couponGridLines,
     });
-    downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'meal-coupons.pdf');
+    downloadBlob(
+      new Blob(
+        [Uint8Array.from(pdfBytes).buffer],
+        { type: 'application/pdf' },
+      ),
+      'meal-coupons.pdf',
+    );
   };
 
   return (
@@ -99,7 +111,7 @@ function App() {
         {parsed && (
           <div className="summary">
             <p>{summary?.names ?? 0} names found</p>
-            <p>{summary?.menus.length ?? 0} meal coupon entries found</p>
+            <p>{summary?.menus ?? 0} meal coupon entries found</p>
             <p>Menu choices: {summary?.menuChoices.join(', ') || 'None'}</p>
           </div>
         )}
